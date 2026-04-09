@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("ChainPost 컨트랙트 테스트", function () {
+describe("ChainPost Contract Tests", function () {
 
   let postRegistry, editHistory, accessControl;
   let owner, user1;
@@ -21,7 +21,7 @@ describe("ChainPost 컨트랙트 테스트", function () {
 
   describe("PostRegistry", function () {
 
-    it("게시물을 생성할 수 있어야 한다", async function () {
+    it("Should allow a user to create a post", async function () {
       const tx = await postRegistry.connect(user1).createPost("QmTestCID123");
       const receipt = await tx.wait();
 
@@ -32,7 +32,7 @@ describe("ChainPost 컨트랙트 테스트", function () {
       expect(event).to.not.be.undefined;
     });
 
-    it("작성자가 아닌 사람은 삭제할 수 없어야 한다", async function () {
+    it("Should prevent non-authors from deleting a post", async function () {
       const tx = await postRegistry.connect(user1).createPost("QmTestCID123");
       const receipt = await tx.wait();
       const parsed = postRegistry.interface.parseLog(receipt.logs[0]);
@@ -43,7 +43,7 @@ describe("ChainPost 컨트랙트 테스트", function () {
       ).to.be.revertedWith("Not the author");
     });
 
-    it("게시물을 소프트 삭제할 수 있어야 한다", async function () {
+    it("Should allow the author to soft-delete a post", async function () {
       const tx = await postRegistry.connect(user1).createPost("QmTestCID123");
       const receipt = await tx.wait();
       const parsed = postRegistry.interface.parseLog(receipt.logs[0]);
@@ -59,7 +59,7 @@ describe("ChainPost 컨트랙트 테스트", function () {
 
   describe("EditHistory", function () {
 
-    it("원본 버전이 기록되어야 한다", async function () {
+    it("Should record the original version of a post", async function () {
       const tx = await postRegistry.connect(user1).createPost("QmOriginalCID");
       const receipt = await tx.wait();
       const parsed = postRegistry.interface.parseLog(receipt.logs[0]);
@@ -73,14 +73,14 @@ describe("ChainPost 컨트랙트 테스트", function () {
       expect(history[0].editNote).to.equal("Original");
     });
 
-    it("수정 시 버전이 추가되어야 한다", async function () {
+    it("Should append a new version when a post is edited", async function () {
       const tx = await postRegistry.connect(user1).createPost("QmOriginalCID");
       const receipt = await tx.wait();
       const parsed = postRegistry.interface.parseLog(receipt.logs[0]);
       const postId = parsed.args.postId;
 
       await editHistory.connect(user1).recordOriginal(postId, "QmOriginalCID");
-      await editHistory.connect(user1).editPost(postId, "QmEditedCID", "오타 수정");
+      await editHistory.connect(user1).editPost(postId, "QmEditedCID", "Fixed typo");
 
       const history = await editHistory.getHistory(postId);
       expect(history.length).to.equal(2);
@@ -91,7 +91,7 @@ describe("ChainPost 컨트랙트 테스트", function () {
 
   describe("AccessControl", function () {
 
-    it("게시물 공개 범위를 설정할 수 있어야 한다", async function () {
+    it("Should allow the author to set post visibility", async function () {
       const tx = await postRegistry.connect(user1).createPost("QmTestCID");
       const receipt = await tx.wait();
       const parsed = postRegistry.interface.parseLog(receipt.logs[0]);
@@ -103,7 +103,7 @@ describe("ChainPost 컨트랙트 테스트", function () {
       expect(visibility).to.equal(2);
     });
 
-    it("작성자가 아닌 사람은 공개 범위를 바꿀 수 없어야 한다", async function () {
+    it("Should prevent non-authors from changing post visibility", async function () {
       const tx = await postRegistry.connect(user1).createPost("QmTestCID");
       const receipt = await tx.wait();
       const parsed = postRegistry.interface.parseLog(receipt.logs[0]);
