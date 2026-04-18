@@ -1,18 +1,16 @@
+# ChainPost
+Blockchain-based data governance for social media
+
 # ChainPost 🔗
-> Blockchain-Based Data Governance for Social Media
+> Blockchain-based Social Media with User-Owned Content
 
-A decentralised social media prototype where users retain full ownership
-of their content through blockchain technology. Built with Solidity,
-Hardhat, and React 18 + Vite.
-
-**Live Application:** https://chainpost.vercel.app  
-**GitHub:** https://github.com/khancho-sudo/ChainPost  
-**Course:** Blockchain for Data Governance | Group 1
+A decentralised social media prototype where users retain full ownership 
+of their content through blockchain technology. Built with Solidity, 
+Hardhat, and ReactJS.
 
 ---
 
 ## 🚨 Problem
-
 Current social media platforms suffer from three critical data governance failures:
 
 | # | Problem | Impact |
@@ -24,7 +22,6 @@ Current social media platforms suffer from three critical data governance failur
 ---
 
 ## 💡 Solution
-
 ChainPost uses blockchain to give users direct control over their content:
 
 - **Wallet Login** — Identity via MetaMask wallet, no username/password
@@ -36,46 +33,17 @@ ChainPost uses blockchain to give users direct control over their content:
 
 ## 🏗️ System Architecture
 User (MetaMask Wallet)
-│
-▼
-React Frontend (Vite + ethers.js v6)
-│
-├── IPFS / Pinata  ←  post content stored here (off-chain)
-│                      returns CID (Content Identifier)
-│
-└── Ethereum Sepolia Testnet
-├── PostRegistry.sol   ← CID + author + timestamp on-chain
-├── EditHistory.sol    ← version history per post
-└── AccessControl.sol ← per-post visibility settings
-
-**Why hybrid storage?** Full text on Ethereum = prohibitive gas fees.
-Only the 46–59 byte IPFS CID is written on-chain. Any content change
-produces a different CID — tampering is immediately detectable.
-
----
-
-## 📁 Folder Structure
-ChainPost/
-├── contracts/              Solidity smart contracts (3 files)
-│   ├── PostRegistry.sol    Post registration and soft-delete
-│   ├── EditHistory.sol     Immutable version history per post
-│   └── AccessControl.sol   Per-post visibility control
-├── test/
-│   └── ChainPost.test.js   7 unit tests (Hardhat + Chai)
-├── scripts/
-│   └── deploy.js           Deployment script for Sepolia
-├── hardhat.config.js       Hardhat configuration
-├── package.json            Backend dependencies
-└── frontend/               React 18 + Vite frontend
-├── src/
-│   ├── abi/            Contract ABIs for ethers.js
-│   ├── components/     UI components (Navbar, PostCard, etc.)
-│   ├── hooks/          useWallet, useContracts
-│   ├── services/       IPFS / Pinata integration
-│   ├── App.jsx         Main app shell
-│   └── config.js       Contract addresses (Sepolia)
-├── .env.example        Environment variable template
-└── README.md           Frontend setup instructions
+↓
+Frontend (ReactJS + ethers.js)
+↓
+Smart Contracts (Solidity + Hardhat)
+├── PostRegistry.sol
+├── EditHistory.sol
+└── AccessControl.sol
+↓
+IPFS (Pinata) — Content Storage
+↓
+Ethereum Sepolia Testnet
 
 ---
 
@@ -85,18 +53,16 @@ ChainPost/
 |-------|-----------|
 | Smart Contract | Solidity ^0.8.20 |
 | Development Framework | Hardhat |
-| Frontend | React 18, Vite |
-| Blockchain Client | ethers.js v6 |
+| Frontend | ReactJS + ethers.js |
 | Storage | IPFS (Pinata API) |
 | Network | Ethereum Sepolia Testnet |
-| Hosting | Vercel |
 
 ---
 
 ## 📄 Smart Contracts
 
 ### PostRegistry.sol
-Registers posts on-chain. Stores author wallet address, IPFS CID, and
+Registers posts on-chain. Stores author wallet address, IPFS CID, and 
 timestamp. Supports soft-delete — records are never erased.
 
 **Key Functions:**
@@ -106,7 +72,7 @@ timestamp. Supports soft-delete — records are never erased.
 - `getPostsByAuthor(address)` — Get all posts by a wallet
 
 ### EditHistory.sol
-Tracks every edit as an immutable version chain. Version 0 is always
+Tracks every edit as an immutable version chain. Version 0 is always 
 the original.
 
 **Key Functions:**
@@ -129,9 +95,9 @@ All changes logged on-chain.
 
 | Contract | Address |
 |----------|---------|
-| PostRegistry | `0x864c74902D07d0Ae1b80E48038E65D39DC761434` |
-| EditHistory | `0xDaBFB8116eaB9aec05CB0885e683911B7F22FFA1` |
-| AccessControl | `0x0c69dcF42B358D4E7993e06A0AE9322Cbe5AeD45` |
+| PostRegistry | `여기에_배포주소` |
+| EditHistory | `여기에_배포주소` |
+| AccessControl | `여기에_배포주소` |
 
 🔍 Verify on [Sepolia Etherscan](https://sepolia.etherscan.io)
 
@@ -141,37 +107,34 @@ All changes logged on-chain.
 
 ### Prerequisites
 - Node.js v18+
-- MetaMask browser extension (set to **Sepolia** testnet)
-- Pinata account (free): https://pinata.cloud
-- Sepolia test ETH: https://sepolia-faucet.pk910.de
+- MetaMask browser extension
+- Git
 
-### Backend (Contracts)
+### Installation
 
 ```bash
+# Clone the repository
 git clone https://github.com/khancho-sudo/ChainPost.git
 cd ChainPost
+
+# Install dependencies
 npm install
 ```
 
+### Environment Setup
 Create a `.env` file in the root directory:
 SEPOLIA_RPC_URL=your_alchemy_rpc_url
 PRIVATE_KEY=your_metamask_private_key
 
+### Run Tests
 ```bash
-npx hardhat test                                          # Run tests
-npx hardhat run scripts/deploy.js --network sepolia       # Deploy
+npx hardhat test
 ```
 
-### Frontend
-
+### Deploy to Sepolia
 ```bash
-cd frontend
-npm install
-cp .env.example .env    # Add your Pinata JWT
-npm run dev             # Open http://localhost:5173
+npx hardhat run scripts/deploy.js --network sepolia
 ```
-
-See `frontend/README.md` for full frontend setup instructions.
 
 ---
 
@@ -196,7 +159,7 @@ See `frontend/README.md` for full frontend setup instructions.
 | Role | Responsibility |
 |------|---------------|
 | Backend | Smart Contracts, Hardhat, Deployment |
-| Frontend | React 18 + Vite, ethers.js, UI/UX |
+| Frontend | ReactJS, ethers.js, UI/UX |
 
 ---
 
@@ -205,4 +168,3 @@ See `frontend/README.md` for full frontend setup instructions.
 - [ethers.js Documentation](https://docs.ethers.org)
 - [IPFS Documentation](https://docs.ipfs.tech)
 - [Sepolia Etherscan](https://sepolia.etherscan.io)
-- [Pinata](https://pinata.cloud)
